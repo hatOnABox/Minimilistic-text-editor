@@ -169,6 +169,7 @@ def saveFile(event=None):
     # get global variables needed
     global textArea
     global file_path
+    global settings
 
     # if the user is not editing a file then create a new one
     if file_path == 'Untitled':
@@ -182,6 +183,23 @@ def saveFile(event=None):
         file.write(str(textArea.get(1.0, "end-1c")))
         file.close()
         root.title('Settings')
+        settings = load(open(path.dirname(path.abspath(__file__)) + '/editorSettings.json', 'r'))
+        textArea.config(
+            font=(
+                settings['fontName'],
+                settings['fontSize']
+            ),
+
+            cursor=settings['cursorStyle'],
+            background=settings['backgroundColor'],
+            foreground=settings['textColor'],
+            highlightcolor=settings['backgroundColor'],
+            selectborderwidth=0,
+            highlightthickness=0,
+            padx=settings['padx'],
+            pady=settings['pady'],
+            undo=True
+        )
     # otherwise save the file
     else:
         file = open(file_path, 'w')
