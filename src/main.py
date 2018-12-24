@@ -6,9 +6,11 @@ from tkinter import filedialog
 from sys import platform, exit
 from os import path
 
+
 import tkinter
 import tkinter.scrolledtext as scrollText
 from json import load
+from random import randint 
 
 
 # this variable is VERY IMPORTANT as it is used to store the file path for the current file that is being edited.
@@ -17,6 +19,7 @@ file_path = 'Untitled'
 
 # used if there was a JSON error
 jsonError = ''
+
 
 # check platform the user is on
 # these conditional statements are used to create a variable named commandKey.
@@ -135,7 +138,7 @@ def openFile(event=None):
         textArea.insert(INSERT, file.read())
         file.close()
         root.title(file_path)
-        high()
+        whenKeyIsPressed()
     except:
         return 'break'
     return 'break'
@@ -183,23 +186,6 @@ def saveFile(event=None):
         file.write(str(textArea.get(1.0, "end-1c")))
         file.close()
         root.title('Settings')
-        settings = load(open(path.dirname(path.abspath(__file__)) + '/editorSettings.json', 'r'))
-        textArea.config(
-            font=(
-                settings['fontName'],
-                settings['fontSize']
-            ),
-
-            cursor=settings['cursorStyle'],
-            background=settings['backgroundColor'],
-            foreground=settings['textColor'],
-            highlightcolor=settings['backgroundColor'],
-            selectborderwidth=0,
-            highlightthickness=0,
-            padx=settings['padx'],
-            pady=settings['pady'],
-            undo=True
-        )
     # otherwise save the file
     else:
         file = open(file_path, 'w')
@@ -334,9 +320,21 @@ def highlightSyntax(word, color):
 
 
 # run every time key is pressed
-def high(event=None):
-    if file_path == "Untitled":
+def whenKeyIsPressed(event=None):
+    if file_path == 'Untitled':
         return
+
+    # Using randint allows me to run code that will not always run. 
+    # This solution may not be the best but it is the best I can think of.
+    # The following code will add a * to the end of the title of the text on the screen 
+    # is not equal to the text in the current file.
+    if randint(1, 15) == 1:
+        if str(textArea.get(1.0, 'end-1c')) != open(file_path).read():
+            root.title(file_path + ' *')
+        else:
+            root.title(file_path)
+    
+    # get the filepath for syntax highlighting
     filename, file_extension = path.splitext(file_path)
     for item in list(settings['syntax'].keys()):
         if item == file_extension:
@@ -445,7 +443,7 @@ else:
 
 
 # add keyboard shorcuts
-textArea.bind('<Key>', high)
+textArea.bind('<Key>', whenKeyIsPressed)
 textArea.bind('<Shift-' + commandKey + '-z>', editRedo)
 textArea.bind('<' + commandKey + '-n>', newFile)
 textArea.bind('<' + commandKey + '-s>', saveFile)
@@ -472,6 +470,7 @@ del jsonError # get rid of jsonError
 def main():
     while True:
         root.mainloop()
+        root.after(timer, run_inactive_code)
 
 
 if __name__ == '__main__':
