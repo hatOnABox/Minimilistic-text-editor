@@ -13,7 +13,8 @@
     ".py": {
       "def": "orange",
       "\"": "green",
-      "'": "green"
+      "'": "green",
+      "import": "orange"
     },
     ".js": {
       "function": "orange",
